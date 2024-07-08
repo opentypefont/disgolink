@@ -118,13 +118,6 @@ func (p *playerImpl) Update(ctx context.Context, opts ...lavalink.PlayerUpdateOp
 		return err
 	}
 
-	p.track = updatedPlayer.Track
-	if updatedPlayer.Track != nil {
-		p.state.Position = updatedPlayer.Track.Info.Position
-	} else {
-		p.state.Position = 0
-	}
-	p.state.Time = lavalink.Now()
 	p.volume = updatedPlayer.Volume
 
 	p.voice = updatedPlayer.Voice
@@ -211,24 +204,18 @@ func (p *playerImpl) OnEvent(event lavalink.Event) {
 	case lavalink.PlayerResumeEvent:
 		p.paused = false
 
+	case lavalink.TrackStartEvent:
+		p.track = &e.Track
+
 	case lavalink.TrackEndEvent:
-		if p.track != nil {
-			e.Track = *p.track
-		}
 		if e.Reason != lavalink.TrackEndReasonReplaced && e.Reason != lavalink.TrackEndReasonStopped {
 			p.track = nil
 		}
 
 	case lavalink.TrackExceptionEvent:
-		if p.track != nil {
-			e.Track = *p.track
-		}
 		p.track = nil
 
 	case lavalink.TrackStuckEvent:
-		if p.track != nil {
-			e.Track = *p.track
-		}
 		p.track = nil
 
 	case lavalink.WebSocketClosedEvent:
