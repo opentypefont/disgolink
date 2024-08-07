@@ -38,7 +38,7 @@ type Player interface {
 
 func NewPlayer(logger *slog.Logger, lavalink Client, node Node, guildID snowflake.ID) Player {
 	return &playerImpl{
-		logger:   logger.With(slog.String("name", "player"), slog.String("guild_id", guildID.String())),
+		logger:   logger.With(slog.String("name", "disgolink_player"), slog.String("guild_id", guildID.String())),
 		lavalink: lavalink,
 		node:     node,
 		guildID:  guildID,
