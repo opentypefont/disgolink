@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log/slog"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/disgoorg/log"
 )
@@ -76,6 +78,6 @@ var commands = []*discordgo.ApplicationCommand{
 
 func registerCommands(s *discordgo.Session) {
 	if _, err := s.ApplicationCommandBulkOverwrite(s.State.User.ID, GuildId, commands); err != nil {
-		log.Warn(err)
+		log.Warn("Failed to register commands", slog.Any("err", err))
 	}
 }

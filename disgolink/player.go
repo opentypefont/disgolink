@@ -6,8 +6,9 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
+
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 var ErrPlayerNoNode = errors.New("player has no node")
@@ -37,7 +38,7 @@ type Player interface {
 
 func NewPlayer(logger *slog.Logger, lavalink Client, node Node, guildID snowflake.ID) Player {
 	return &playerImpl{
-		logger:   logger,
+		logger:   logger.With(slog.String("name", "player"), slog.String("guild_id", guildID.String())),
 		lavalink: lavalink,
 		node:     node,
 		guildID:  guildID,

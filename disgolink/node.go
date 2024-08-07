@@ -10,8 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/gorilla/websocket"
+
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 type Status string
@@ -236,7 +237,7 @@ func (n *nodeImpl) open(ctx context.Context, reconnecting bool) error {
 		if ready.Resumed {
 			n.logger.InfoContext(ctx, "successfully resumed session", slog.String("session_id", n.config.SessionID))
 			if err = n.syncPlayers(ctx); err != nil {
-				n.logger.Warn("failed to sync players: ", err)
+				n.logger.Warn("failed to sync players: ", slog.Any("err", err))
 			}
 		} else {
 			n.logger.Warn("failed to resume session", slog.String("session_id", n.config.SessionID))
