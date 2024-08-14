@@ -230,14 +230,16 @@ func (p *playerImpl) OnPlayerUpdate(state lavalink.PlayerState) {
 }
 
 func (p *playerImpl) OnVoiceServerUpdate(ctx context.Context, token string, endpoint string) {
-	if _, err := p.Node().Rest().UpdatePlayer(ctx, p.node.SessionID(), p.guildID, lavalink.PlayerUpdate{
-		Voice: &lavalink.VoiceState{
-			Token:     token,
-			Endpoint:  endpoint,
-			SessionID: p.voice.SessionID,
-		},
-	}); err != nil {
-		p.logger.ErrorContext(ctx, "error while sending voice server update", slog.Any("err", err))
+	if p.voice.SessionID != "" {
+		if _, err := p.Node().Rest().UpdatePlayer(ctx, p.node.SessionID(), p.guildID, lavalink.PlayerUpdate{
+			Voice: &lavalink.VoiceState{
+				Token:     token,
+				Endpoint:  endpoint,
+				SessionID: p.voice.SessionID,
+			},
+		}); err != nil {
+			p.logger.ErrorContext(ctx, "error while sending voice server update", slog.Any("err", err))
+		}
 	}
 	p.voice.Token = token
 	p.voice.Endpoint = endpoint
@@ -251,6 +253,17 @@ func (p *playerImpl) OnVoiceStateUpdate(ctx context.Context, channelID *snowflak
 		}
 		p.lavalink.RemovePlayer(p.guildID)
 		return
+	}
+	if p.voice.Token != "" && p.voice.Endpoint != "" {
+		if _, err := p.Node().Rest().UpdatePlayer(ctx, p.node.SessionID(), p.guildID, lavalink.PlayerUpdate{
+			Voice: &lavalink.VoiceState{
+				Token:     p.voice.Token,
+				Endpoint:  p.voice.SessionID,
+				SessionID: sessionID,
+			},
+		}); err != nil {
+			p.logger.ErrorContext(ctx, "error while sending voice state update", slog.Any("err", err))
+		}
 	}
 	p.channelID = channelID
 	p.voice.SessionID = sessionID
